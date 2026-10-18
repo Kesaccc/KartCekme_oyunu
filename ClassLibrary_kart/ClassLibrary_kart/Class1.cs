@@ -5,10 +5,7 @@ namespace ClassLibrary_kart
     {
         Random rnd = new();
         int _acikkart, _gizlikart, ksecim = 0;
-        private int kazanma, kaybetme, berabere = 0;
-        public string ad { private get; set; }
-        public string soyad { private get; set{ value = value.ToUpper(); } }
-        public string oyuncu { get{ return $"{ad} {soyad}"; } }
+        public Class_oyuncu oyuncu { get; set; }
         public int acikkart { get{ return _acikkart; } }
         public void YeniOyun()
         {
@@ -25,17 +22,56 @@ namespace ClassLibrary_kart
         public string KartSecimKontrol()
         {
             string sonuc = "";
-            if (_gizlikart == _acikkart) { sonuc = "BERABERE";berabere++; }
+            if (_gizlikart == _acikkart) { sonuc = "BERABERE";oyuncu.Berabere++; }
             else
             {
-                if (ksecim == 1 && _gizlikart > _acikkart || ksecim == 2 && _gizlikart < _acikkart) { sonuc = "KAZANDINIZ"; kazanma++; }
-                else { sonuc = "KAYBETTİNİZ";kaybetme++; }
+                if (ksecim == 1 && _gizlikart > _acikkart || ksecim == 2 && _gizlikart < _acikkart) { sonuc = "KAZANDINIZ"; oyuncu.Kazanma++; }
+                else { sonuc = "KAYBETTİNİZ";oyuncu.Kaybetme++; }
             }
             return $"Gizli kart: {_gizlikart}  {sonuc}";
         }
         public string kartSkorGoster() {
-            string skormetni = $"[Kazanma: {kazanma} / Kaybetme: {kaybetme} /Berabere: {berabere}]";
+            string skormetni = $"[Kazanma: {oyuncu.Kazanma} / Kaybetme: {oyuncu.Kaybetme} /Berabere: {oyuncu.Berabere}]";
             return skormetni;
+        }
+    }
+    public class Class_oyuncu
+    {
+        public string Ad { get; set; }
+        public int Kazanma { get; set; }
+        public int Kaybetme { get; set; }
+        public int Berabere { get; set; }
+        public Class_oyuncu(string ad)
+        {
+            Ad = ad;
+        }
+    }
+    public class Class_oyuncuIslemler
+    {
+        private List<Class_oyuncu> oyuncular = new();
+        public void OyuncuEkle(string ad)
+        {
+            Class_oyuncu yeniOyuncu = new Class_oyuncu(ad);
+            oyuncular.Add(yeniOyuncu);
+        }
+        public List<Class_oyuncu> OyunculariListele()
+        {
+            return oyuncular.OrderBy(o => o.Ad).ToList();
+        }
+        public Class_oyuncu OyuncuBul(string ad)
+        {
+            return oyuncular.FirstOrDefault(o => o.Ad == ad);
+        }
+        public bool OyuncuGuncelle(string eskiAd, string yeniAd)
+        {
+            bool guncellendiMi = false;
+            var oyuncu = oyuncular.FirstOrDefault(o => o.Ad == eskiAd);
+            if (oyuncu != null)
+            {
+                oyuncu.Ad = yeniAd;
+                guncellendiMi = true;
+            }
+            return guncellendiMi;
         }
     }
 }
